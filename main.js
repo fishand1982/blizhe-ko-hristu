@@ -131,6 +131,36 @@ function sidebar() {
 function mobileNav() {
   return `<nav class="mobile-nav" aria-label="Нижняя навигация">${sections.map(s=>`<button type="button" data-nav="${s.id}" class="${ui.view===s.id?'active':''}" ${ui.view===s.id?'aria-current="page"':''}>${icon(s.icon,20)}<span>${s.short}</span></button>`).join('')}</nav>`;
 }
+function featureCards() {
+  const completed=saved.completed.length;
+  return `<section class="feature-grid" aria-label="Основные разделы">
+    <button type="button" class="feature-card feature-card--situations" data-nav="prayers">
+      <span class="feature-icon">${icon('sprout',26)}</span>
+      <span class="feature-copy"><strong>Жизненные ситуации</strong><small>Молитвы и отрывки из Писания<br/>для важных моментов жизни.</small></span>
+      <span class="feature-arrow" aria-hidden="true">${icon('right',18)}</span>
+      <span class="feature-landscape feature-landscape--leaves" aria-hidden="true"></span>
+    </button>
+    <button type="button" class="feature-card feature-card--plan" data-nav="plan">
+      <span class="feature-icon feature-icon--calendar"><b>30</b></span>
+      <span class="feature-copy"><span class="feature-heading-line"><strong>30 дней с Евангелием</strong><em>Путь</em></span><small>Короткий ежедневный план<br/>чтения и размышления.</small></span>
+      <span class="feature-arrow" aria-hidden="true">${icon('right',18)}</span>
+      <span class="feature-progress-mini" aria-label="Пройдено ${completed} из 30 дней"><i style="width:${Math.round(completed/30*100)}%"></i></span>
+      <span class="feature-landscape feature-landscape--path" aria-hidden="true"></span>
+    </button>
+    <button type="button" class="feature-card feature-card--journal" data-nav="journal">
+      <span class="feature-icon">${icon('message',25)}</span>
+      <span class="feature-copy"><strong>Молитвенный дневник</strong><small>Записывайте молитвы, просьбы<br/>и ответы Бога.</small></span>
+      <span class="feature-arrow" aria-hidden="true">${icon('right',18)}</span>
+      <span class="feature-landscape feature-landscape--book" aria-hidden="true"></span>
+    </button>
+    <button type="button" class="feature-card feature-card--favorites" data-favorites-home>
+      <span class="feature-icon">${icon('bookmark',25)}</span>
+      <span class="feature-copy"><strong>Избранное</strong><small>Ваши любимые молитвы,<br/>отрывки и планы.</small></span>
+      <span class="feature-arrow" aria-hidden="true">${icon('right',18)}</span>
+      <span class="feature-landscape feature-landscape--branch" aria-hidden="true"></span>
+    </button>
+  </section>`;
+}
 function prayerCard(s) {
   const favorite=saved.favorites.includes(s.id);
   return `<section class="panel detail" id="detail" aria-labelledby="detail-title">
@@ -187,7 +217,8 @@ function journalView() {
 }
 function layout() {
   return `<div class="site-shell"><header class="site-header">${brand()}<div class="header-small">${icon('leaf',17)} Без регистрации. Без рекламы. Бесплатно.</div></header>
-  <div class="page"><div class="hero"><div class="hero-content"><div class="eyebrow">Писание · Молитва · Жизнь</div><h1>Мир начинается<br/>с доверия Богу.</h1><p>Тихое место для молитвы, чтения Евангелия и маленьких шагов веры в обычной жизни.</p></div><div class="hero-art">${heroIllustration()}</div></div>
+  <div class="page"><section class="hero"><div class="hero-content"><div class="eyebrow">Писание · Молитва · Жизнь</div><h1>Мир начинается<br/>с доверия Богу.</h1><p>Тихое место для молитвы, чтения Евангелия и маленьких шагов веры в обычной жизни.</p><div class="hero-actions"><button type="button" class="hero-cta" data-nav="plan">${icon('book',19)}<span>Начать читать Евангелие</span>${icon('right',18)}</button></div></div><div class="hero-art">${heroIllustration()}</div></section>
+  ${featureCards()}
   <div class="quote-line">«Господь мой и Бог мой!» · Иоанна 20:28</div>
   <div class="workspace">${sidebar()}<main id="main" class="main-view" tabindex="-1">${ui.view==='prayers'?prayersView():ui.view==='plan'?planView():journalView()}</main></div>
   <footer class="footer">${icon('cross',19,'class="footer-cross"')}<span class="footer-scripture">Господу — вся слава.</span><br/>Авторские молитвы по мотивам Священного Писания. Читай библейские отрывки в полном контексте.<br/>Бесплатный проект с открытым исходным кодом · <button type="button" class="help-link" data-about>О молитвослове и его ограничениях</button></footer></div>${mobileNav()}</div>`;
@@ -220,7 +251,8 @@ app.addEventListener('click', async e => {
   if (!target || target.disabled) return;
   const d=target.dataset;
   if (d.action==='home') {e.preventDefault(); navigate('prayer=anxiety');return;}
-  if (d.nav) {navigate(d.nav==='prayers'?'prayer='+ui.selected:d.nav);return;}
+  if (d.favoritesHome!==undefined) {ui.category='favorites';ui.view='prayers';navigate('prayer='+ui.selected);return;}
+  if (d.nav) {if(d.nav==='prayers') ui.category='all';navigate(d.nav==='prayers'?'prayer='+ui.selected:d.nav);return;}
   if (d.category) {ui.category=d.category;render();return;}
   if (d.prayer) {ui.selected=d.prayer;navigate('prayer='+ui.selected, 'detail');return;}
   if (d.resetFilter!==undefined) {ui.category='all';ui.query='';render();return;}
