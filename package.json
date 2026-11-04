@@ -1,0 +1,11 @@
+{
+  "name": "blizhe-ko-hristu",
+  "version": "1.0.1",
+  "private": true,
+  "type": "module",
+  "description": "Бесплатный евангельский молитвослов без сервера и зависимостей",
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check main.js && node --check data.js && node --check sw.js && npm test"
+  }
+}
